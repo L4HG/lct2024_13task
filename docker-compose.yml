@@ -37,3 +37,23 @@ services:
     restart: always
     ports:
       - "5173:80"
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    shm_size: "2gb"
+    ulimits:
+      stack: 67108864
+      memlock: -1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    ports:
+     -  11434:11434
+    volumes:
+     - "./ollama/ollama:/root/.ollama"
+    restart: unless-stopped
