@@ -1,0 +1,39 @@
+services:
+  vinojup:
+    image: python:3.11
+    container_name: lctdocker
+    command: /bin/bash -c "/lct/start.sh"
+    volumes:
+     - "./lct:/lct"
+    restart: unless-stopped
+    ports:
+     - "127.0.0.1:8000:8000"
+    environment:
+    - S3_URL=http://5math_minio
+    - S3_USER=thisiss3
+    - S3_PASS=thisiss3pass
+
+
+
+  5math_minio:
+    container_name: lct_minio
+    image: minio/minio
+    ports:
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioUserLCT123
+      MINIO_ROOT_PASSWORD: minioPassLCT123
+      MINIO_SERVER_URL: 5math_minio
+      MINIO_BROWSER_REDIRECT_URL: 5math_minio_cosole
+    command: server --console-address :9001 /data
+    volumes:
+      - ./minio/data:/data
+
+  front:
+    build:
+      context: ./dtl_picture_gen
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "5173:80"
